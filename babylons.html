@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Babylon.js Viewer 1 Example</title>
+
+    <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+
+    <style>
+
+        #header {
+            font-size: 2.5em;
+            padding: 5px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .cell {
+            width:50%;
+            height:100%;
+            padding: 10px;
+            background-color: #BBBBBB;
+            border: #000;
+        }
+
+        .babylon {
+            margin: auto;
+            box-sizing: border-box;
+            background: unset;
+        }
+        
+        #render-canvas, #render-object-canvas{
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div id = "header">
+    Babylon.js Demo    
+    </div>
+    <!-- <div class= "cell babylon">
+        <h3> render a - <a href="https://assets.babylonjs.com/meshes/box.glb"> box object </a></h3>
+        <babylon model="https://assets.babylonjs.com/meshes/box.glb"></babylon>
+    </div> -->
+    <div class= "cell babylon">
+        <canvas id="render-canvas"></canvas>
+    </div>
+    <div class= "cell babylon">
+        <canvas id="render-object-canvas"></canvas>
+    </div>
+    <script>
+
+        var canvas = document.getElementById("render-canvas"); // Rendering canvas - scene will be rendered here
+        var engine = new BABYLON.Engine(canvas); // Engine - resembles to renderer in three.js - used to render scene
+        var scene = new BABYLON.Scene(engine); // Initialising Scene 
+        scene.clearColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        var camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 0, -15), scene); // Initialising Camera
+        var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(100, 100, 100), scene); // Adding light - view objects in scene in a better way
+
+        var box = BABYLON.Mesh.CreateBox("box", 2, scene);
+        var boxMaterial = new BABYLON.StandardMaterial("material", scene);
+        boxMaterial.emissiveColor = new BABYLON.Color3(0, 0.58, 0.86);
+        box.material = boxMaterial;
+        box.rotation.x = -0.5;
+        box.rotation.y = -0.5;
+        box.rotation.z = -0.5;
+
+        var torus = BABYLON.Mesh.CreateTorus("torus", 2, 0.5, 15, scene);
+        torus.position.x = -10;
+        torus.rotation.x = 1.5;
+        var torusMaterial = new BABYLON.StandardMaterial("material", scene);
+        torusMaterial.emissiveColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+        torus.material = torusMaterial;
+
+        var cylinder = BABYLON.Mesh.CreateCylinder("cylinder", 2, 2, 2, 12, 1, scene);
+        cylinder.position.x = -5;
+        cylinder.rotation.x = -0.2;
+        var cylinderMaterial = new BABYLON.StandardMaterial("material", scene);
+        cylinderMaterial.emissiveColor = new BABYLON.Color3(1, 0.58, 0);
+        cylinder.material = cylinderMaterial;
+
+        const sphere = BABYLON.Mesh.CreateSphere("sphere", 32, 2, scene);
+        sphere.position.x = 5;
+        sphere.rotation.x = -0.2;
+        var sphereMaterial = new BABYLON.StandardMaterial("material", scene);
+        sphereMaterial.emissiveColor = new BABYLON.Color3(1, 0.58, 0);
+        sphere.material = sphereMaterial;
+
+        const knot = BABYLON.Mesh.CreateTorusKnot("knot", 1, 0.25, 16, 16, 2, 3, scene);
+        knot.position.x = 10;
+        var knotMaterial = new BABYLON.StandardMaterial("material", scene);
+        knotMaterial.emissiveColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+        knot.material = knotMaterial;
+    
+        var renderLoop = function () {
+            scene.render();
+        };
+        engine.runRenderLoop(renderLoop);
+    </script>
+    <script>
+
+        var object_canvas = document.getElementById("render-object-canvas"); // Rendering canvas - scene will be rendered here
+        var object_engine = new BABYLON.Engine(object_canvas); // Engine - resembles to renderer in three.js - used to render scene
+        var object_scene = new BABYLON.Scene(object_engine); // Initialising Scene 
+        object_scene.clearColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        var object_camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 0, -15), object_scene); // Initialising Camera
+        var object_light = new BABYLON.PointLight("light", new BABYLON.Vector3(50, 50, 0), object_scene); // Adding light - view objects in scene in a better way
+        
+        BABYLON.SceneLoader.Append("office/", "scene.gltf", object_scene, function (object_scene) {
+            // Create a default arc rotate camera and light.
+            object_scene.createDefaultCameraOrLight(true, true, true);
+
+            // The default camera looks at the back of the asset.
+            // Rotate the camera by 180 degrees to the front of the asset.
+            object_scene.activeCamera.alpha += Math.PI;
+        });
+        var renderLoopObject2 = function () {
+            object_scene.render();
+        };
+        object_engine.runRenderLoop(renderLoopObject2);
+        // var delayCreateScene = function () {
+        //     // Create a scene.
+        //     var scene = new BABYLON.Scene(engine);
+
+        //     // Create a default skybox with an environment.
+        //     var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.dds", scene);
+        //     var currentSkybox = scene.createDefaultSkybox(hdrTexture, true);
+
+        //     // Append glTF model to scene.
+        //     BABYLON.SceneLoader.Append("https://github.com/BabylonJS/Babylon.js/tree/master/Playground/scenes/BoomBox/", "BoomBox.gltf", scene, function (scene) {
+        //         // Create a default arc rotate camera and light.
+        //         scene.createDefaultCameraOrLight(true, true, true);
+
+        //         // The default camera looks at the back of the asset.
+        //         // Rotate the camera by 180 degrees to the front of the asset.
+        //         scene.activeCamera.alpha += Math.PI;
+        //     });
+
+        //     return scene;
+        // };
+    </script>
+</body>
+</html>
